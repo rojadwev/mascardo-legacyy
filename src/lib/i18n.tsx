@@ -9,6 +9,7 @@ const en = {
   nav: {
     biography: "Biography",
     timeline: "Timeline",
+    catalog: "Catalog",
     movie: "The Movie",
     gallery: "Gallery",
     translatorLabel: "Read this site in:",
@@ -16,7 +17,7 @@ const en = {
     fil: "Filipino",
   },
   hero: {
-    kicker: "A student's archive, 1871 – 1932",
+    kicker: "Mascardo Legacy · A personal archive, 1871 – 1932",
     name: "Heneral Tomás Mascardo",
     subtitle:
       "Teacher. Revolutionary. Governor of two provinces. The general who defied Luna.",
@@ -38,9 +39,9 @@ const en = {
     ],
   },
   bio: {
-    kicker: "Version 1 · Biography",
+    kicker: "Biography",
     title: "The Life of a Revolutionary",
-    lead: "Written for students: a plain-language life story, from barrio schoolteacher to brigadier general.",
+    lead: "A plain-language life story, from barrio schoolteacher to brigadier general.",
     early: {
       title: "I. Early Years",
       paras: [
@@ -88,6 +89,25 @@ const en = {
       { year: "2015", text: "Portrayed by Lorenz Martinez in Jerrold Tarog's film Heneral Luna." },
     ],
   },
+  catalog: {
+    kicker: "Browse & Search",
+    title: "The Catalog",
+    lead:
+      "Every person, place, event, and screen appearance in this archive, in one searchable index.",
+    searchPlaceholder: "Search the catalog by name, place, year, or theme…",
+    categories: {
+      all: "All",
+      people: "People",
+      places: "Places",
+      events: "Events",
+      screen: "On Screen",
+    } as Record<string, string>,
+    entryCount: (n: number) => `${n} ${n === 1 ? "entry" : "entries"}`,
+    noResultsTitle: "Nothing found",
+    noResultsBody:
+      "No entries match that search. Try a shorter term, or clear the filter to browse everything.",
+    clearSearch: "Clear search",
+  },
   movie: {
     kicker: "On Screen",
     title: "Mascardo in Heneral Luna (2015)",
@@ -116,7 +136,7 @@ const en = {
           "Behind the scenes with the cast and crew — including how characters like Mascardo and Janolino were deliberately separated from an earlier composite to give each man's defiance its own arc.",
       },
     ],
-    triviaTitle: "Details Students Should Notice",
+    triviaTitle: "Details Worth Noticing",
     trivia: [
       "Lorenz Martinez plays Mascardo; Anthony Falcon plays Sgt. Díaz, Mascardo's messenger who delivers his excuses to Luna.",
       "Makeup artist Carmen Reyes gave Mascardo only a partially formed moustache — a deliberate symbol of his frustration at being overshadowed by Luna.",
@@ -157,7 +177,7 @@ const en = {
       "Wikipedia: Tomás Mascardo · Heneral Luna",
       "Official channels: Heneral Luna The Movie · TBA Studios (YouTube)",
     ],
-    note: "A version-1 student archive. History remembers men in fragments — read widely.",
+    note: "Mascardo Legacy — a private archive kept for one reader. History remembers in fragments; read widely.",
   },
 };
 
@@ -165,6 +185,7 @@ const fil: Dict = {
   nav: {
     biography: "Talambuhay",
     timeline: "Kronolohiya",
+    catalog: "Katalogo",
     movie: "Ang Pelikula",
     gallery: "Galeriya",
     translatorLabel: "Basahin ang site sa:",
@@ -172,7 +193,7 @@ const fil: Dict = {
     fil: "Filipino",
   },
   hero: {
-    kicker: "Arsip para sa mag-aaral, 1871 – 1932",
+    kicker: "Mascardo Legacy · Pansariling arkibo, 1871 – 1932",
     name: "Heneral Tomás Mascardo",
     subtitle:
       "Guro. Rebolusyonaryo. Gobernador ng dalawang lalawigan. Ang heneral na tumutol kay Luna.",
@@ -194,9 +215,9 @@ const fil: Dict = {
     ],
   },
   bio: {
-    kicker: "Bersyon 1 · Talambuhay",
+    kicker: "Talambuhay",
     title: "Ang Buhay ng Isang Rebolusyonaryo",
-    lead: "Nakasulat para sa mga mag-aaral: payak at malinaw na kuwento ng buhay, mula guro sa baryo hanggang brigadyer heneral.",
+    lead: "Payak at malinaw na kuwento ng buhay, mula guro sa baryo hanggang brigadyer heneral.",
     early: {
       title: "I. Maagang Buhay",
       paras: [
@@ -244,6 +265,26 @@ const fil: Dict = {
       { year: "2015", text: "Ginampanan ni Lorenz Martinez sa pelikulang Heneral Luna ni Jerrold Tarog." },
     ],
   },
+  catalog: {
+    kicker: "Mag-browse at Maghanap",
+    title: "Ang Katalogo",
+    lead:
+      "Bawat tao, lugar, pangyayari, at pagganap sa screen sa arkibong ito, nasa iisang hanay na mahanap.",
+    searchPlaceholder: "Maghanap sa katalogo — pangalan, lugar, taon, o paksa…",
+    categories: {
+      all: "Lahat",
+      people: "Mga Tao",
+      places: "Mga Lugar",
+      events: "Mga Pangyayari",
+      screen: "Sa Pelikula",
+    } as Record<string, string>,
+    entryCount: (n: number) =>
+      n === 1 ? "1 tala" : `${n} (na) tala`,
+    noResultsTitle: "Walang nahanap",
+    noResultsBody:
+      "Walang tumugma sa hinanap mo. Sumubok ng mas maikling salita, o alisin ang pagsasala upang makita ang lahat.",
+    clearSearch: "Burahin ang hinanap",
+  },
   movie: {
     kicker: "Sa Pelikula",
     title: "Si Mascardo sa Heneral Luna (2015)",
@@ -272,7 +313,7 @@ const fil: Dict = {
           "Sa likod ng eksena kasama ang cast at crew — kabilang kung paano sadyang inihiwalay sina Mascardo at Janolino mula sa isang kompositong karakter upang bigyan ng sariling kuwento ang bawat pagsuway.",
       },
     ],
-    triviaTitle: "Mga Dapat Pansinin ng mga Mag-aaral",
+    triviaTitle: "Mga Dapat Pansinin",
     trivia: [
       "Si Lorenz Martinez ang gumanap na Mascardo; si Anthony Falcon naman si Sgt. Díaz, ang mensahero ni Mascardo na nagdadala ng mga dahilan kay Luna.",
       "Binigyan si Mascardo ng makeup artist na si Carmen Reyes ng bahagyang bubungbungan — sadyang simbolo ng frustrasyon dahil nalililiman niya kay Luna.",
@@ -313,7 +354,7 @@ const fil: Dict = {
       "Wikipedia: Tomás Mascardo · Heneral Luna",
       "Mga opisyal na channel: Heneral Luna The Movie · TBA Studios (YouTube)",
     ],
-    note: "Arsip para sa mag-aaral — bersyon 1. Sa piraso natin naaalala ang mga bayani — magbasa nang malawak.",
+    note: "Mascardo Legacy — pansariling arkibo. Sa piraso natin naaalala ang mga bayani — magbasa nang malawak.",
   },
 };
 

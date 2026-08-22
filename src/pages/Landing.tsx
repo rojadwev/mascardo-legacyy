@@ -1,7 +1,13 @@
 import { motion } from "framer-motion";
-import { BookOpen, Clapperboard, Images, Languages, ScrollText } from "lucide-react";
+import { BookOpen, Clapperboard, Images, Languages, Library, ScrollText, Search, X } from "lucide-react";
+import { useMemo, useState } from "react";
 import type { ReactNode } from "react";
 import { LanguageProvider, useLanguage } from "@/lib/i18n";
+import {
+  catalogCategories,
+  catalogEntries,
+} from "@/lib/catalog";
+import type { CatalogCategory } from "@/lib/catalog";
 import type { Lang } from "@/lib/i18n";
 
 const fadeUp = {
@@ -80,6 +86,7 @@ function SiteHeader() {
   const links = [
     { href: "#biography", label: t.nav.biography, icon: BookOpen },
     { href: "#timeline", label: t.nav.timeline, icon: ScrollText },
+    { href: "#catalog", label: t.nav.catalog, icon: Library },
     { href: "#movie", label: t.nav.movie, icon: Clapperboard },
     { href: "#gallery", label: t.nav.gallery, icon: Images },
   ];
@@ -87,7 +94,7 @@ function SiteHeader() {
     <header className="sticky top-0 z-40 border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/85">
       <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-x-6 gap-y-3 px-4 py-3">
         <a href="#top" className="font-serif text-lg font-bold tracking-tight">
-          T. Mascardo
+          Mascardo Legacy
           <span className="ml-2 hidden text-xs font-normal uppercase tracking-[0.25em] text-muted-foreground md:inline">
             1871–1932
           </span>
@@ -119,7 +126,7 @@ function Hero() {
           initial={{ opacity: 0, scale: 0.97 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.7, ease: "easeOut" }}
-          className="vintage-frame mx-auto w-full max-w-xs rotate-[-1deg] p-3 sm:max-w-sm"
+          className="vintage-frame mx-auto w-full max-w-xs p-3 sm:max-w-sm"
         >
           <img
             src={t.gallery.items[0].src}
@@ -243,6 +250,146 @@ function Timeline() {
   );
 }
 
+type ActiveCategory = CatalogCategory | "all";
+
+function CatalogSection() {
+  const { lang, t } = useLanguage();
+  const [query, setQuery] = useState("");
+  const [active, setActive] = useState<ActiveCategory>("all");
+
+  const results = useMemo(() => {
+    const terms = query.trim().toLowerCase().split(/\s+/).filter(Boolean);
+    return catalogEntries.filter((entry) => {
+      if (active !== "all" && entry.category !== active) return false;
+      if (terms.length === 0) return true;
+      const haystack = [
+        entry.title,
+        entry.years ?? "",
+        entry.summary.en,
+        entry.summary.fil,
+        ...entry.tags,
+      ]
+        .join(" ")
+        .toLowerCase();
+      return terms.every((term) => haystack.includes(term));
+    });
+  }, [query, active]);
+
+  const chips: { key: ActiveCategory; label: string }[] = [
+    { key: "all", label: t.catalog.categories.all },
+    ...catalogCategories.map((c) => ({
+      key: c as ActiveCategory,
+      label: t.catalog.categories[c],
+    })),
+  ];
+
+  return (
+    <section id="catalog" className="scroll-mt-20">
+      <div className="mx-auto max-w-5xl px-4 pt-20">
+        <SectionHeading kicker={t.catalog.kicker} title={t.catalog.title} lead={t.catalog.lead} />
+
+        <motion.div {...fadeUp} className="mt-10">
+          <div className="relative mx-auto max-w-xl">
+            <Search
+              className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground"
+              aria-hidden
+            />
+            <input
+              type="search"
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              placeholder={t.catalog.searchPlaceholder}
+              aria-label={t.catalog.searchPlaceholder}
+              className="w-full rounded-sm border border-border bg-card py-2.5 pl-9 pr-9 font-serif text-sm text-foreground placeholder:italic placeholder:text-muted-foreground/70 focus:border-ring focus:outline-none focus:ring-1 focus:ring-ring"
+            />
+            {query ? (
+              <button
+                type="button"
+                onClick={() => setQuery("")}
+                aria-label={t.catalog.clearSearch}
+                className="absolute right-2.5 top-1/2 -translate-y-1/2 text-muted-foreground transition-colors hover:text-foreground"
+              >
+                <X className="size-4" aria-hidden />
+              </button>
+            ) : null}
+          </div>
+
+          <div className="mt-5 flex flex-wrap items-center justify-center gap-2">
+            {chips.map((chip) => (
+              <button
+                key={chip.key}
+                type="button"
+                onClick={() => setActive(chip.key)}
+                aria-pressed={active === chip.key}
+                className={
+                  "rounded-full border px-4 py-1.5 font-serif text-xs tracking-wide transition-colors sm:text-sm " +
+                  (active === chip.key
+                    ? "border-primary bg-primary text-primary-foreground"
+                    : "border-border bg-transparent text-muted-foreground hover:border-foreground/40 hover:text-foreground")
+                }
+              >
+                {chip.label}
+              </button>
+            ))}
+          </div>
+
+          <p className="mt-4 text-center text-xs uppercase tracking-widest text-muted-foreground">
+            {t.catalog.entryCount(results.length)}
+          </p>
+        </motion.div>
+
+        {results.length > 0 ? (
+          <div className="mt-6 grid gap-x-8 gap-y-2 sm:grid-cols-2">
+            {results.map((entry) => (
+              <motion.article
+                key={entry.id}
+                layout
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ duration: 0.3 }}
+                className="group border-b border-dashed border-border py-4"
+              >
+                <div className="flex items-baseline justify-between gap-3">
+                  <h3 className="font-serif text-lg font-semibold leading-snug">{entry.title}</h3>
+                  {entry.years ? (
+                    <span className="shrink-0 font-serif text-xs italic text-muted-foreground">
+                      {entry.years}
+                    </span>
+                  ) : null}
+                </div>
+                <p className="smallcaps-label mt-0.5 text-primary/80">
+                  {t.catalog.categories[entry.category]}
+                </p>
+                <p className="mt-2 text-sm leading-relaxed text-foreground/80">
+                  {entry.summary[lang]}
+                </p>
+                <p className="mt-2 text-xs italic text-muted-foreground">{entry.tags.join(" · ")}</p>
+              </motion.article>
+            ))}
+          </div>
+        ) : (
+          <motion.div {...fadeUp} className="mx-auto mt-8 max-w-md py-12 text-center">
+            <p className="font-serif text-lg font-semibold">{t.catalog.noResultsTitle}</p>
+            <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
+              {t.catalog.noResultsBody}
+            </p>
+            <button
+              type="button"
+              onClick={() => {
+                setQuery("");
+                setActive("all");
+              }}
+              className="mt-5 rounded-sm border border-border bg-card px-4 py-2 font-serif text-sm text-foreground transition-colors hover:bg-secondary"
+            >
+              {t.catalog.clearSearch}
+            </button>
+          </motion.div>
+        )}
+      </div>
+    </section>
+  );
+}
+
 function MovieSection() {
   const { t } = useLanguage();
   return (
@@ -312,14 +459,7 @@ function Gallery() {
         <SectionHeading kicker={t.gallery.kicker} title={t.gallery.title} />
         <div className="mt-10 grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
           {t.gallery.items.map((item, i) => (
-            <motion.figure
-              key={i}
-              {...fadeUp}
-              className={
-                "vintage-frame p-3 " +
-                (i % 2 === 0 ? "rotate-[-0.6deg]" : "rotate-[0.6deg]")
-              }
-            >
+            <motion.figure key={i} {...fadeUp} className="vintage-frame p-3">
               <img
                 src={item.src}
                 alt={item.caption}
@@ -365,6 +505,7 @@ export default function Landing(): ReactNode {
           <QuickFacts />
           <Biography />
           <Timeline />
+          <CatalogSection />
           <MovieSection />
           <Gallery />
         </main>
