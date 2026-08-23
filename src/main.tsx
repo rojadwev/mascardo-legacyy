@@ -35,11 +35,6 @@ class RootErrorBoundary extends React.Component<
           <div className="max-w-lg text-center">
             <p className="text-sm font-semibold">Runtime error</p>
             <p className="mt-2 text-xs text-muted-foreground break-words">{this.state.message}</p>
-            {this.state.stack && (
-              <pre className="mt-3 text-left text-[10px] leading-4 text-muted-foreground/80 max-h-40 overflow-auto rounded border border-border/60 p-2">
-                {this.state.stack}
-              </pre>
-            )}
           </div>
         </div>
       );
@@ -68,7 +63,7 @@ createRoot(document.getElementById("root")!).render(
   <StrictMode>
     <RootErrorBoundary>
       <ConvexAuthWrapper convex={convex}>
-        <BrowserRouter>
+        <BrowserRouter basename={import.meta.env.BASE_URL?.replace(/\/$/, '') || undefined}>
           <RouteSyncer />
           <Suspense fallback={<RouteLoading />}>
             <Routes>
