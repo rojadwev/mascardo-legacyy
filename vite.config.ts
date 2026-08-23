@@ -6,9 +6,9 @@ import { defineConfig } from "vite";
 
 // vlyPlugin is only available in the Freebuff environment — load it
 // conditionally so the build works in GitHub Actions / local / Vercel.
-let vlyPlugin: (() => import("vite").Plugin) | undefined;
+let vlyIntegration: (() => import("vite").Plugin) | undefined;
 try {
-  vlyPlugin = (await import("@vly-ai/integrations")).vlyPlugin;
+  vlyIntegration = (await import("@vly-ai/integrations")).vlyPlugin;
 } catch {
   // Not in Freebuff — skip silently.
 }
@@ -16,7 +16,7 @@ try {
 // https://vite.dev/config/
 export default defineConfig({
   base: process.env.BASE_URL || "/",
-  plugins: [react(), ...(vlyPlugin ? [vlyPlugin()] : []), tailwindcss()],
+  plugins: [vlyPlugin(), react(), ...(vlyIntegration ? [vlyIntegration()] : []), tailwindcss()],
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),
