@@ -34,7 +34,7 @@ jobs:
         env:
           # GitHub Pages serves from /<repo-name>/ — set base so Vite
           # prefixes all asset paths correctly.
-          BASE_URL: /mascardo-legacy/
+          BASE_URL: /mascardo-legacyy/
 
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
