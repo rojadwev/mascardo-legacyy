@@ -18,6 +18,22 @@ function headers(token: string) {
   };
 }
 
+export const _diagnose = action({
+  args: { owner: v.string(), repo: v.string() },
+  handler: async (_ctx, args): Promise<Record<string, unknown>> => {
+    const token = process.env.GITHUB_TOKEN;
+    if (!token) return { error: "GITHUB_TOKEN not set" };
+    const h = headers(token);
+    const me = await fetch(`${API}/user`, { headers: h });
+    const login = me.ok ? ((await me.json()) as { login?: string }).login : `HTTP ${me.status}`;
+    const repo = await fetch(`${API}/repos/${args.owner}/${args.repo}`, { headers: h });
+    const repoInfo = repo.ok ? ((await repo.json()) as { default_branch?: string }).default_branch : `HTTP ${repo.status}`;
+    const list = await fetch(`${API}/user/repos?per_page=30&sort=updated`, { headers: h });
+    const repos = list.ok ? ((await list.json()) as Array<{ full_name?: string }>).map((r) => r.full_name) : [];
+    return { login, repoInfo, repos };
+  },
+});
+
 /**
  * Pushes one or more text files to a GitHub repository via the Contents API.
  * Creates the file if it does not exist, updates it (with correct blob SHA)
