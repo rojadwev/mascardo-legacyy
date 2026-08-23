@@ -1,7 +1,10 @@
 import { motion } from "framer-motion";
-import { BookOpen, Clapperboard, Images, Languages, Library, ScrollText, Search, X } from "lucide-react";
+import { BookOpen, Clapperboard, CloudUpload, Images, Languages, Library, ScrollText, Search, X } from "lucide-react";
 import { useMemo, useState } from "react";
 import type { ReactNode } from "react";
+import { useAction } from "convex/react";
+import { toast } from "sonner";
+import { api } from "../convex/_generated/api";
 import { LanguageProvider, useLanguage } from "@/lib/i18n";
 import {
   catalogCategories,
@@ -477,6 +480,94 @@ function Gallery() {
   );
 }
 
+function GitHubBackup() {
+  const { lang } = useLanguage();
+  const pushFiles = useAction(api.github.pushFiles);
+  const [owner, setOwner] = useState("rojadawei");
+  const [repo, setRepo] = useState("mascardo");
+  const [busy, setBusy] = useState(false);
+
+  const handleBackup = async () => {
+    if (!owner.trim() || !repo.trim()) return;
+    setBusy(true);
+    try {
+      const catalogJson = JSON.stringify(
+        {
+          archive: "Mascardo Legacy",
+          exportedAt: new Date().toISOString(),
+          language: lang,
+          entries: catalogEntries,
+        },
+        null,
+        2,
+      );
+      const readme = [
+        "# Mascardo Legacy",
+        "",
+        "A personal bilingual archive on General Tomás Mascardo y Echenique",
+        "(1871–1932): his life in the Philippine Revolution and the",
+        "Philippine–American War, and his portrayal in Heneral Luna (2015).",
+        "",
+        "## Contents",
+        "",
+        "- `catalog/mascardo-legacy.json` — the full searchable catalog:",
+        "  people, places, events, and screen appearances.",
+        "",
+        "_Exported automatically from the Mascardo Legacy app._",
+      ].join("\n");
+
+      const results = await pushFiles({
+        owner: owner.trim(),
+        repo: repo.trim(),
+        commitMessage: `Archive backup — ${new Date().toISOString().slice(0, 10)}`,
+        files: [
+          { path: "catalog/mascardo-legacy.json", content: catalogJson },
+          { path: "README.md", content: readme },
+        ],
+      });
+      toast.success(`GitHub updated: ${results.map((r) => `${r.path} (${r.status})`).join(", ")}`);
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "GitHub backup failed");
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  return (
+    <motion.div {...fadeUp} className="vintage-frame mx-auto mt-12 max-w-xl p-5 sm:p-6">
+      <h3 className="text-center font-serif text-lg font-bold">GitHub Backup</h3>
+      <p className="mt-2 text-center text-xs leading-relaxed text-muted-foreground">
+        Commits a JSON snapshot of the catalog to your repository via the GitHub API.
+      </p>
+      <div className="mt-4 flex flex-col gap-2 sm:flex-row">
+        <input
+          value={owner}
+          onChange={(e) => setOwner(e.target.value)}
+          placeholder="owner"
+          aria-label="GitHub owner"
+          className="min-w-0 flex-1 rounded-sm border border-border bg-card px-3 py-2 font-serif text-sm focus:border-ring focus:outline-none focus:ring-1 focus:ring-ring"
+        />
+        <input
+          value={repo}
+          onChange={(e) => setRepo(e.target.value)}
+          placeholder="repository"
+          aria-label="GitHub repository"
+          className="min-w-0 flex-1 rounded-sm border border-border bg-card px-3 py-2 font-serif text-sm focus:border-ring focus:outline-none focus:ring-1 focus:ring-ring"
+        />
+        <button
+          type="button"
+          onClick={handleBackup}
+          disabled={busy || !owner.trim() || !repo.trim()}
+          className="flex items-center justify-center gap-2 rounded-sm border border-primary bg-primary px-4 py-2 font-serif text-sm font-semibold text-primary-foreground transition-colors hover:bg-primary/90 disabled:cursor-not-allowed disabled:opacity-50"
+        >
+          <CloudUpload className="size-4" aria-hidden />
+          {busy ? "Backing up…" : "Back up"}
+        </button>
+      </div>
+    </motion.div>
+  );
+}
+
 function SiteFooter() {
   const { t } = useLanguage();
   return (
@@ -489,6 +580,7 @@ function SiteFooter() {
             <li key={i}>{s}</li>
           ))}
         </ul>
+        <GitHubBackup />
         <p className="mt-8 font-serif text-xs italic text-foreground/60">{t.footer.note}</p>
       </motion.div>
     </footer>
