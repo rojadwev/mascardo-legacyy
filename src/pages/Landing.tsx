@@ -114,9 +114,9 @@ function Hero() {
             <a href="#biography" className="rounded-sm border border-primary bg-primary px-5 py-2.5 font-serif text-sm font-semibold tracking-wide text-primary-foreground shadow-sm transition-colors hover:bg-primary/90">{t.hero.ctaBio}</a>
             <a href="#movie" className="rounded-sm border border-border bg-card px-5 py-2.5 font-serif text-sm font-semibold tracking-wide text-foreground transition-colors hover:bg-secondary">{t.hero.ctaMovie}</a>
           </div>
-                    <p className="mt-4 text-xs italic text-muted-foreground">
-            Developed by JGalve
-          </p>
+                    <p className="mt-4 text-sm not-italic text-foreground/70">
+  Developed by JGalve
+</p>
         </motion.div>
       </div>
     </section>
