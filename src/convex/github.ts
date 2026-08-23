@@ -128,3 +128,37 @@ export const pushFiles = action({
     return results;
   },
 });
+
+/**
+ * Deletes one or more files from a GitHub repository.
+ */
+export const deleteFiles = action({
+  args: {
+    owner: v.string(),
+    repo: v.string(),
+    branch: v.optional(v.string()),
+    commitMessage: v.string(),
+    files: v.array(v.string()),
+  },
+  handler: async (_ctx, args): Promise<string[]> => {
+    const token = process.env.GITHUB_TOKEN;
+    if (!token) throw new Error("GITHUB_TOKEN is not set");
+    const branch = args.branch ?? "main";
+    const results: string[] = [];
+    for (const filePath of args.files) {
+      const cleanPath = filePath.replace(/^\/+/, "");
+      const url = `${API}/repos/${args.owner}/${args.repo}/contents/${encodeURIComponent(cleanPath)}`;
+      const getRes = await fetch(`${url}?ref=${encodeURIComponent(branch)}`, { headers: headers(token) });
+      if (getRes.status !== 200) { results.push(`${cleanPath}: not found`); continue; }
+      const data = (await getRes.json()) as { sha?: string };
+      if (!data.sha) { results.push(`${cleanPath}: no sha`); continue; }
+      const delRes = await fetch(url, {
+        method: "DELETE",
+        headers: headers(token),
+        body: JSON.stringify({ message: args.commitMessage, sha: data.sha, branch }),
+      });
+      results.push(`${cleanPath}: ${delRes.ok ? "deleted" : `HTTP ${delRes.status}`}`);
+    }
+    return results;
+  },
+});
