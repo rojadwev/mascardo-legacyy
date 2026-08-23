@@ -4,9 +4,19 @@ import react from "@vitejs/plugin-react";
 import path from "path";
 import { defineConfig } from "vite";
 
+// vlyPlugin is only available in the Freebuff environment — load it
+// conditionally so the build works in GitHub Actions / local / Vercel.
+let vlyPlugin: (() => import("vite").Plugin) | undefined;
+try {
+  vlyPlugin = (await import("@vly-ai/integrations")).vlyPlugin;
+} catch {
+  // Not in Freebuff — skip silently.
+}
+
 // https://vite.dev/config/
 export default defineConfig({
-  plugins: [react(), vlyPlugin(), tailwindcss()],
+  base: process.env.BASE_URL || "/",
+  plugins: [react(), ...(vlyPlugin ? [vlyPlugin()] : []), tailwindcss()],
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),
@@ -97,4 +107,7 @@ export default defineConfig({
       overlay: false,
     },
   },
+  // GitHub Pages serves a single-page app from a sub-path —
+  // ensure the built index.html can handle client-side routing.
+  appType: "spa",
 });
