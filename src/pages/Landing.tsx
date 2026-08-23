@@ -483,8 +483,8 @@ function Gallery() {
 function GitHubBackup() {
   const { lang } = useLanguage();
   const pushFiles = useAction(api.github.pushFiles);
-  const [owner, setOwner] = useState("rojadawei");
-  const [repo, setRepo] = useState("mascardo");
+  const [owner, setOwner] = useState("rojadwev");
+  const [repo, setRepo] = useState("mascardo-legacy");
   const [busy, setBusy] = useState(false);
 
   const handleBackup = async () => {
