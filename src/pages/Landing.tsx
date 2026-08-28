@@ -115,7 +115,7 @@ function Hero() {
             <a href="#movie" className="rounded-sm border border-border bg-card px-5 py-2.5 font-serif text-sm font-semibold tracking-wide text-foreground transition-colors hover:bg-secondary">{t.hero.ctaMovie}</a>
           </div>
                     <p className="mt-4 text-base not-italic text-foreground/70">
-  Developed by RojaFDev 
+  Developed by RojaDwev 
 </p>
         </motion.div>
       </div>
